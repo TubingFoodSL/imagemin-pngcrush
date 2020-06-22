@@ -3,8 +3,8 @@ const execBuffer = require('exec-buffer');
 const isPng = require('is-png');
 const pngcrush = require('pngcrush-bin');
 
-module.exports = options => buf => {
-	options = {...options};
+module.exports = opts => buf => {
+	opts = Object.assign({}, opts);
 
 	if (!Buffer.isBuffer(buf)) {
 		return Promise.reject(new TypeError('Expected a buffer'));
@@ -20,10 +20,8 @@ module.exports = options => buf => {
 		'-q'
 	];
 
-	if (options.reduce) {
+	if (opts.reduce) {
 		args.push('-reduce');
-	} else {
-		args.push('-noreduce');
 	}
 
 	args.push(execBuffer.input, execBuffer.output);
@@ -32,8 +30,8 @@ module.exports = options => buf => {
 		input: buf,
 		bin: pngcrush,
 		args
-	}).catch(error => {
-		error.message = error.stderr || error.message;
-		throw error;
+	}).catch(err => {
+		err.message = err.stderr || err.message;
+		throw err;
 	});
 };
